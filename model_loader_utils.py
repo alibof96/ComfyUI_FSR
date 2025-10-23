@@ -7,6 +7,8 @@ from PIL import Image
 import numpy as np
 import cv2
 
+
+
 from comfy.utils import common_upscale,ProgressBar
 
 cur_path = os.path.dirname(os.path.abspath(__file__))
@@ -151,3 +153,18 @@ def load_images_list(img_list: list, ):
     if len(images) == 0:
         raise FileNotFoundError(f"No images could be loaded .")
     return images
+
+def get_video_files(directory, extensions=None):
+    if extensions is None:
+        extensions = ['webm', 'mp4', 'mkv', 'gif', 'mov']
+    extensions = [ext.lower() for ext in extensions]
+    video_files = []
+
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            _, ext = os.path.splitext(file)
+            ext = ext.lower()[1:] 
+            if ext in extensions:
+                full_path = os.path.join(root, file)
+                video_files.append(full_path)             
+    return video_files
