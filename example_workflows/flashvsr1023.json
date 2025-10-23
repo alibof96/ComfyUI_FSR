@@ -1,0 +1,110 @@
+{
+  "1": {
+    "inputs": {
+      "dit": "diffusion_pytorch_model_streaming_dmd.safetensors",
+      "proj_pt": "LQ_proj_in.ckpt",
+      "emb_pt": "posi_prompt.pth",
+      "vae": "none",
+      "tcd_encoder": "TCDecoder.ckpt"
+    },
+    "class_type": "FlashVSR_SM_Model",
+    "_meta": {
+      "title": "FlashVSR_SM_Model"
+    }
+  },
+  "7": {
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "seed": [
+        "13",
+        2
+      ],
+      "scale": 1,
+      "kv_ratio": 3.5,
+      "local_range": 11,
+      "steps": 1,
+      "cfg": 1,
+      "sparse_ratio": 2,
+      "full_tiled": true,
+      "color_fix": true,
+      "fix_method": "wavelet",
+      "split_num": 81,
+      "model": [
+        "1",
+        0
+      ],
+      "image": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "FlashVSR_SM_KSampler",
+    "_meta": {
+      "title": "FlashVSR_SM_KSampler"
+    }
+  },
+  "8": {
+    "inputs": {
+      "video": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "GetVideoComponents",
+    "_meta": {
+      "title": "获取视频组件"
+    }
+  },
+  "10": {
+    "inputs": {
+      "fps": [
+        "8",
+        2
+      ],
+      "images": [
+        "7",
+        0
+      ],
+      "audio": [
+        "8",
+        1
+      ]
+    },
+    "class_type": "CreateVideo",
+    "_meta": {
+      "title": "创建视频"
+    }
+  },
+  "13": {
+    "inputs": {
+      "video_dir": "D:\\Downloads\\123",
+      "seed": 767589816,
+      "start": 0,
+      "stop": 0,
+      "step": 1,
+      "mode": "increment",
+      "video_file": "none"
+    },
+    "class_type": "FlashVSR_SM_VideoPathLoop",
+    "_meta": {
+      "title": "FlashVSR_SM_VideoPathLoop"
+    }
+  },
+  "14": {
+    "inputs": {
+      "filename_prefix": "video/ComfyUI",
+      "format": "mp4",
+      "codec": "h264",
+      "video-preview": "",
+      "video": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "SaveVideo",
+    "_meta": {
+      "title": "保存视频"
+    }
+  }
+}
