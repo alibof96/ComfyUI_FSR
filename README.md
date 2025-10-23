@@ -2,6 +2,7 @@
 [FlashVSR](https://github.com/OpenImagingLab/FlashVSR): Towards Real-Time Diffusion-Based Streaming Video Super-Resolution,this node ,you can use it in comfyUI
 
 # Upadte
+*  同步tiny的专属long模式  
 *  新增切片视频路径加载节点，输入保存切片视频的路径，开启自动推理，即可推理完路径所有视频； 
 *  修复输入图像归一化处理错误导致无法复现官方的问题，分离decoder，新增关键点模型卸载和OOM处理，包括处理超长视频向量的OOM，同步官方local range的修改，新增小波模式下的加减帧处理（项目一作大佬提的）；
 *  local_range=7这个是会最清晰，local_range=11会比较稳定，color fix 推荐用小波（没重影）； 
