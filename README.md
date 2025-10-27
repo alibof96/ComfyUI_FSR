@@ -2,6 +2,7 @@
 [FlashVSR](https://github.com/OpenImagingLab/FlashVSR): Towards Real-Time Diffusion-Based Streaming Video Super-Resolution,this node ,you can use it in comfyUI
 
 # Upadte
+*  满足部分网友需要超分单张图片的奇怪要求,默认输出25帧1秒的视频，详见示例，Block-Sparse-Attention 目前不支持5090的sm120架构，需要改一下Block-Sparse-Attention的源码来支持； 
 *  同步tiny的专属long模式  
 *  新增切片视频路径加载节点，输入保存切片视频的路径，开启自动推理，即可推理完路径所有视频； 
 *  修复输入图像归一化处理错误导致无法复现官方的问题，分离decoder，新增关键点模型卸载和OOM处理，包括处理超长视频向量的OOM，同步官方local range的修改，新增小波模式下的加减帧处理（项目一作大佬提的）；
@@ -56,6 +57,8 @@ python setup.py install
   
 
 # Example
+* single image VSR 
+![](https://github.com/smthemex/ComfyUI_FlashVSR/blob/main/example_workflows/example_s.png)
 * full old node 
 ![](https://github.com/smthemex/ComfyUI_FlashVSR/blob/main/example_workflows/example18.png)
 * tiny new
