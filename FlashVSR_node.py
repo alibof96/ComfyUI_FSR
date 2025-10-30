@@ -45,13 +45,14 @@ class FlashVSR_SM_Model(io.ComfyNode):
                 io.Combo.Input("vae",options= ["none"] + folder_paths.get_filename_list("vae") ),
                 io.Combo.Input("tcd_encoder",options= ["none"] + [i for i in folder_paths.get_filename_list("FlashVSR") if "tcd" in i.lower()] ),
                 io.Boolean.Input("tiny_long", default=False),
+                io.Combo.Input("decode_vae",options= ["none"] + folder_paths.get_filename_list("vae") ),
             ],
             outputs=[
                 io.Custom("FlashVSR_SM_Model").Output(),
                 ],
             )
     @classmethod
-    def execute(cls, dit,proj_pt,emb_pt,vae,tcd_encoder,tiny_long) -> io.NodeOutput:
+    def execute(cls, dit,proj_pt,emb_pt,vae,tcd_encoder,tiny_long,decode_vae) -> io.NodeOutput:
         dit_path=folder_paths.get_full_path("FlashVSR", dit) if dit != "none" else None
         proj_pt_path=folder_paths.get_full_path("FlashVSR", proj_pt) if proj_pt != "none" else None
         vae_path=folder_paths.get_full_path("vae", vae) if vae != "none" else None
@@ -66,7 +67,8 @@ class FlashVSR_SM_Model(io.ComfyNode):
             else:
                 model=init_pipeline_tiny(prompt_path,proj_pt_path,dit_path, tcd_encoder_path, device="cuda")
         elif vae_path is not None :
-            model=init_pipeline(prompt_path,proj_pt_path,dit_path, vae_path, device="cuda")
+            decode_vae=folder_paths.get_full_path("vae", decode_vae) if decode_vae != "none" else "none"
+            model=init_pipeline(prompt_path,proj_pt_path,dit_path, vae_path,decode_vae,node_cr_path ,device="cuda")
         else:
             raise Exception("Please select the vae or tcd_encoder")
         return io.NodeOutput(model)
