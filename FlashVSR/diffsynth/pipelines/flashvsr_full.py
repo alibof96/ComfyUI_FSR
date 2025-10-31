@@ -325,11 +325,12 @@ class FlashVSRFullPipeline(BasePipeline):
                 frames = F.pixel_shuffle(decoder_out.movedim(2, 1), upscale_factor=int(upscale)).movedim(1, 2) # pixel shuffle needs [..., C, H, W] format #torch.Size([1, 3, 77, 2048, 1536])
             else:
                 print("new_decoder is light")
-                if tiled:
-                    self.VAE.use_tiling=True
-                else:
-                    self.VAE.use_tiling=False
-                #print(latents.shape)
+                if self.VAE.__class__.__name__ == "WanVAE":
+                    if tiled:
+                        self.VAE.use_tiling=True
+                    else:
+                        self.VAE.use_tiling=False
+                
                 frames=self.VAE.decode(latents.squeeze(0))
         else:
             frames = self.vae.decode(latents, device=self.device, tiled=tiled, tile_size=tile_size, tile_stride=tile_stride)

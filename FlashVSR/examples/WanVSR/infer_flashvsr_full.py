@@ -252,9 +252,20 @@ def init_pipeline(prompt_path,LQ_proj_in_path="./FlashVSR/LQ_proj_in.ckpt",ckpt_
     if new_decoder:
         pipe.new_decoder = True
         if "light" in decode_vae.lower() or "tae" in decode_vae.lower():
-            from ...vae import WanVAE
-            print("use lightvae decoder")
-            VAE = WanVAE(vae_path=decode_vae,dtype=torch.bfloat16,device=device,use_lightvae=True)
+            if os.path.basename(decode_vae).split(".")[0]=="lightvaew2_1":
+                from ...vae import WanVAE
+                print("use lightvae decoder")
+                VAE = WanVAE(vae_path=decode_vae,dtype=torch.bfloat16,device=device,use_lightvae=True)
+            elif os.path.basename(decode_vae).split(".")[0]=="taew2_1":
+                from ...vae_tiny import WanVAE_tiny
+                print("use vae_tiny decoder")
+                VAE = WanVAE_tiny(vae_path=vae_path,dtype=torch.bfloat16,device=device,need_scaled=False)
+            elif os.path.basename(decode_vae).split(".")[0]=="lighttaew2_1":
+                from ...vae_tiny import WanVAE_tiny
+                print("use vae_tiny light decoder")
+                VAE = WanVAE_tiny(vae_path=decode_vae,dtype=torch.bfloat16,device=device,need_scaled=True)
+            else:
+                raise ValueError(f"Unknown vae_name: {decode_vae},only support lightvae,tae,tae_tiny,lighttae_tiny")
             pipe.VAE=VAE
         else:    
             print("use upscale2x decoder")
@@ -310,7 +321,9 @@ def run_inference(pipe,input,seed,scale,kv_ratio=3.0,local_range=9,step=1,cfg_sc
                 if pipe.VAE.__class__.__name__ == "AutoencoderKLWan":
                     pipe.VAE.to('cpu')
                 else:
-                    pipe.VAE.to_cpu()
+                    if pipe.VAE.__class__.__name__ == "WanVAE":
+                        pipe.VAE.to_cpu()
+                    else: pass
             else:
                 pipe.vae.to('cpu')
             torch.cuda.empty_cache()  
@@ -318,7 +331,9 @@ def run_inference(pipe,input,seed,scale,kv_ratio=3.0,local_range=9,step=1,cfg_sc
                 if pipe.VAE.__class__.__name__ == "AutoencoderKLWan":
                     pipe.VAE.to('cuda') 
                 else:
-                    pipe.VAE.to_cuda()
+                    if pipe.VAE.__class__.__name__ == "WanVAE":
+                        pipe.VAE.to_cuda()
+                    else: pass
             else:
                 pipe.vae.to('cuda')
             total_frames = frames.shape[2]
