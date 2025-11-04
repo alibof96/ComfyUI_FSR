@@ -24,3 +24,5 @@ pandas
 tqdm
 datasets
 modelscope
+triton; platform_system!="Windows"
+triton-windows; platform_system=="Windows"

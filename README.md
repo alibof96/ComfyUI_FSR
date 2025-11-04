@@ -1,17 +1,16 @@
 # ComfyUI_FlashVSR
 [FlashVSR](https://github.com/OpenImagingLab/FlashVSR): Towards Real-Time Diffusion-Based Streaming Video Super-Resolution,this node ,you can use it in comfyUI
 
-# Upadte
+# Update
+* **Replaced Block-Sparse-Attention with Sparse_Sage**: Now supports RTX 50 series GPUs (sm_75 to sm_120) without needing to compile custom kernels. This removes the dependency on the difficult-to-compile Block-Sparse-Attention library.
 * add full mode [lightx2v vae encoder](https://huggingface.co/lightx2v/Autoencoders/tree/main) support（only lightvaew2_1.pth,taew2_1.pth,lighttaew2_1.pth） and [Wan2.1-VAE-upscale2x](https://huggingface.co/spacepxl/Wan2.1-VAE-upscale2x) support    
 * 新增lightx2v 加速vae decoder支持和Wan2.1-VAE-upscale2x 放大decoder支持，只是在full 模式下有效，light的加速模型目前只支持（lightvaew2_1.pth  #32.2M,taew2_1.pth,lighttaew2_1.pth） 三个文件 
 # Tips
-*  满足部分网友需要超分单张图片的奇怪要求,默认输出25帧1秒的视频，详见示例，Block-Sparse-Attention 目前不支持5090的sm120架构，需要改一下Block-Sparse-Attention的源码来支持； 
+*  满足部分网友需要超分单张图片的奇怪要求,默认输出25帧1秒的视频，详见示例，现在使用 Sparse_Sage 实现，支持 RTX 50 系列 GPU (sm_75 到 sm_120)，无需编译自定义内核； 
 *  同步tiny的专属long模式  
 *  新增切片视频路径加载节点，输入保存切片视频的路径，开启自动推理，即可推理完路径所有视频； 
 *  修复输入图像归一化处理错误导致无法复现官方的问题，分离decoder，新增关键点模型卸载和OOM处理，包括处理超长视频向量的OOM，同步官方local range的修改，新增小波模式下的加减帧处理（项目一作大佬提的）；
 *  local_range=7这个是会最清晰，local_range=11会比较稳定，color fix 推荐用小波（没重影）； 
-*  编译Block-Sparse-Attention  window的轮子 可以使用 [ smthemex 强制编译版](https://github.com/smthemex/Block-Sparse-Attention) 或者 [lihaoyun6 要联网](https://github.com/lihaoyun6/Block-Sparse-Attention) 两个fork来，不推荐用官方的  
-*  Block-Sparse-Attention 正确安装且能调用才是方法的完全体，当前的函数实现会更容易OOM,但是Block-Sparse-Attention轮子实在不好找，目前只有[CU128 toch2.7](https://github.com/lihaoyun6/ComfyUI-WanVideoWrapper)的，我提供的（[cu128，torch2.8，py311单体](https://pan.quark.cn/s/c9ba067c89bc)）或者自己编译  
 *  方法是基于现有prompt.pt训练的，所以外置cond没有必要已经去掉，新增tile 和 color fix 选项，tile关闭质量更高，需要VRam更高，corlor fix对于非模糊图片可以试试。修复图片索引数不足的错误。  
 *  Choice vae infer full mode ，encoder infer tiny mode 选择vae跑full模式 效果最好，tiny则是速度，数据集基于4倍训练，所以1 scale是不推荐的；  
 *  如果觉得项目有用，请给官方项目[FlashVSR](https://github.com/OpenImagingLab/FlashVSR) 打星； if you Like it ， star the official project [link](https://github.com/OpenImagingLab/FlashVSR)
@@ -31,16 +30,12 @@ git clone https://github.com/smthemex/ComfyUI_FlashVSR
 ```
 pip install -r requirements.txt
 ```
-要复现官方效果，必须安装Block-Sparse-Attention [torch2.8 cu2.8 py311 wheel ](https://pan.quark.cn/s/c9ba067c89bc) or [CU128 toch2.7](https://github.com/lihaoyun6/ComfyUI-WanVideoWrapper)
-```
-git clone https://github.com/mit-han-lab/Block-Sparse-Attention 
-# git clone https://github.com/smthemex/Block-Sparse-Attention # 无须梯子强制编译
-# git clone https://github.com/lihaoyun6/Block-Sparse-Attention # 须梯子
-cd Block-Sparse-Attention
-pip install packaging
-pip install ninja
-python setup.py install
-```
+
+**Note:** This version uses Sparse_Sage instead of Block-Sparse-Attention, which means:
+- ✅ No need to compile custom kernels
+- ✅ Works on RTX 50 series GPUs (sm_75 to sm_120)
+- ✅ Easier installation with just `pip install -r requirements.txt`
+- The implementation uses Triton for efficient sparse attention without custom CUDA kernels
 
 3.checkpoints 
 ----
@@ -76,7 +71,8 @@ python setup.py install
 
 # Acknowledgements
 [DiffSynth Studio](https://github.com/modelscope/DiffSynth-Studio)  
-[Block-Sparse-Attention](https://github.com/mit-han-lab/Block-Sparse-Attention)  
+[Sparse_SageAttention_API](https://github.com/jt-zhang/Sparse_SageAttention_API) - Sparse attention implementation  
+[ComfyUI-FlashVSR_Ultra_Fast](https://github.com/lihaoyun6/ComfyUI-FlashVSR_Ultra_Fast) - Reference implementation  
 [taehv](https://github.com/madebyollin/taehv)  
 
 # Citation
